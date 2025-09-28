@@ -17,7 +17,7 @@ export default function Home() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [validationLoading, setValidationLoading] = useState(true);
+  const [validationLoading, setValidationLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,20 +74,20 @@ export default function Home() {
     }
   };
 
-  useLayoutEffect(() => {
-    const validateCookie = async () => {
-      if (typeof window !== 'undefined') {
-        const res = await authUser();
-        console.log("auth res:", res);
-        if (res.data.success && typeof window !== 'undefined') {
-          window.location.href = "/home";
-        }
-        setValidationLoading(false)
-      }
-    }
+  // useLayoutEffect(() => {
+  //   const validateCookie = async () => {
+  //     if (typeof window !== 'undefined') {
+  //       const res = await authUser();
+  //       console.log("auth res:", res);
+  //       if (res.data.success && typeof window !== 'undefined') {
+  //         window.location.href = "/home";
+  //       }
+  //       setValidationLoading(false)
+  //     }
+  //   }
 
-    validateCookie();
-  }, [])
+  //   validateCookie();
+  // }, [])
 
 
   // if (validationLoading) {

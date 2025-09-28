@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Clock, ArrowRight } from "lucide-react";
 
 const QuizCard = ({ quiz, onStartQuiz }) => {
-  const { title, role, participants, duration, difficulty } = quiz;
+  const { topic, role, participants, duration, difficulty,description } = quiz;
 
   const getDifficultyColor = (level) => {
     switch (level.toLowerCase()) {
@@ -24,7 +24,7 @@ const QuizCard = ({ quiz, onStartQuiz }) => {
     <Card className="w-full max-w-md hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-semibold">{title}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{topic}</CardTitle>
           <Badge variant="outline" className={getDifficultyColor(difficulty)}>
             {difficulty}
           </Badge>
@@ -38,7 +38,7 @@ const QuizCard = ({ quiz, onStartQuiz }) => {
       </CardHeader>
       <CardContent className="pb-2">
         <p className="text-sm text-gray-600 line-clamp-2">
-          Test your knowledge in {title} with this {difficulty.toLowerCase()} level quiz.
+          {description}
         </p>
       </CardContent>
       <CardFooter className="flex justify-between items-center pt-2">

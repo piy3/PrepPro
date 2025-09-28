@@ -28,7 +28,7 @@ export function CreateQuizForm({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     topic: '',
     role: '',
-    numberOfQuestions: 10,
+    numberOfQuestions: 1,
     difficulty: 'Medium',
     description: '',
   });
@@ -111,8 +111,8 @@ export function CreateQuizForm({ isOpen, onClose, onSubmit }) {
               </div>
               <Slider
                 id="questions"
-                min={5}
-                max={20}
+                min={1}
+                max={10}
                 step={1}
                 value={[formData.numberOfQuestions]}
                 onValueChange={([value]) => handleChange('numberOfQuestions', value)}

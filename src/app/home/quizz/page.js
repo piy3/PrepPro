@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import QuizCard from './Components/QuizCard';
@@ -8,12 +8,13 @@ import { CreateQuizForm } from './Components/CreateQuizForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from 'lucide-react';
+import { generateQuiz, getQuizzes } from '@/api/requests.js'
 
 // Mock data - replace with actual API calls
 const MOCK_QUIZZES = [
   {
     id: '1',
-    title: 'React Fundamentals',
+    topic: 'React Fundamentals',
     role: 'Frontend Developer',
     participants: 124,
     duration: 15,
@@ -23,7 +24,7 @@ const MOCK_QUIZZES = [
   },
   {
     id: '2',
-    title: 'System Design Principles',
+    topic: 'System Design Principles',
     role: 'SDE 2',
     participants: 89,
     duration: 30,
@@ -33,7 +34,7 @@ const MOCK_QUIZZES = [
   },
   {
     id: '3',
-    title: 'JavaScript Basics',
+    topic: 'JavaScript Basics',
     role: 'SDE 1',
     participants: 256,
     duration: 20,
@@ -44,41 +45,54 @@ const MOCK_QUIZZES = [
 ];
 
 export default function QuizPage() {
-  const [quizzes, setQuizzes] = useState(MOCK_QUIZZES);
+  const [quizzes, setQuizzes] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [cursor, setCursor] = useState('');
+  const limit = 10;
+  const fetchedRef = useRef(false);
 
   // Filter quizzes based on search term and active tab
   const filteredQuizzes = quizzes.filter(quiz => {
-    const matchesSearch = quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         quiz.topic.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = quiz.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quiz.topic.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab = activeTab === 'all' || quiz.difficulty.toLowerCase() === activeTab.toLowerCase();
     return matchesSearch && matchesTab;
   });
 
-  // Simulate loading
+  const getAllQuizzes = async () => {
+    // setIsLoading(true) is optional; keeping UI stable during dev double-invoke
+    const res = await getQuizzes(cursor, limit);
+    // console.log("RESS:", { ...quizzes, ...res.data.data })
+    // setQuizzes({ ...quizzes, ...res.data.data });
+    setQuizzes(prev => [...prev,...res.data.data]);
+    setCursor(res.data.nextCursor);
+    setIsLoading(false);
+  }
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+    getAllQuizzes();
+  },[]);
 
   const handleCreateQuiz = (quizData) => {
     const newQuiz = {
-      id: Date.now().toString(),
-      title: quizData.topic,
-      role: quizData.role,
-      participants: 0,
-      duration: quizData.duration,
-      difficulty: quizData.difficulty,
       topic: quizData.topic,
-      description: quizData.description
+      role: quizData.role,
+      // participants: 0,
+      // duration: quizData.duration,
+      difficulty: quizData.difficulty,
+      // topic: quizData.topic,
+      description: quizData.description,
+      numberOfQuestions:quizData.numberOfQuestions
     };
-    
-    setQuizzes(prev => [newQuiz, ...prev]);
+
+    // setQuizzes(prev => [newQuiz, ...prev]);
+    const res = generateQuiz(newQuiz);
+
     setIsCreateModalOpen(false);
   };
 
@@ -114,7 +128,7 @@ export default function QuizPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button 
+          <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="whitespace-nowrap"
           >
@@ -124,8 +138,8 @@ export default function QuizPage() {
         </div>
       </div>
 
-      <Tabs 
-        defaultValue="all" 
+      <Tabs
+        defaultValue="all"
         className="mb-6"
         onValueChange={setActiveTab}
       >
@@ -156,19 +170,19 @@ export default function QuizPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuizzes.map((quiz) => (
-            <QuizCard 
-              key={quiz.id} 
-              quiz={quiz} 
-              onStartQuiz={handleStartQuiz} 
+            <QuizCard
+              key={quiz.id}
+              quiz={quiz}
+              onStartQuiz={handleStartQuiz}
             />
           ))}
         </div>
       )}
 
-      <CreateQuizForm 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-        onSubmit={handleCreateQuiz} 
+      <CreateQuizForm
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateQuiz}
       />
     </div>
   );
