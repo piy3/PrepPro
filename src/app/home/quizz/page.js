@@ -1,64 +1,70 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from 'lucide-react';
-import QuizCard from './Components/QuizCard';
-import { CreateQuizForm } from './Components/CreateQuizForm';
+import { Plus } from "lucide-react";
+import QuizCard from "./Components/QuizCard";
+import { CreateQuizForm } from "./Components/CreateQuizForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search } from 'lucide-react';
-import { generateQuiz, getQuizzes } from '@/api/requests.js'
+import { Search } from "lucide-react";
+import { generateQuiz, getQuizzes } from "@/api/requests.js";
+import { useRouter } from "next/navigation";
 
 // Mock data - replace with actual API calls
 const MOCK_QUIZZES = [
   {
-    id: '1',
-    topic: 'React Fundamentals',
-    role: 'Frontend Developer',
+    id: "1",
+    topic: "React Fundamentals",
+    role: "Frontend Developer",
     participants: 124,
     duration: 15,
-    difficulty: 'Medium',
-    topic: 'React',
-    description: 'Test your React knowledge with these fundamental questions.'
+    difficulty: "Medium",
+    topic: "React",
+    description: "Test your React knowledge with these fundamental questions.",
   },
   {
-    id: '2',
-    topic: 'System Design Principles',
-    role: 'SDE 2',
+    id: "2",
+    topic: "System Design Principles",
+    role: "SDE 2",
     participants: 89,
     duration: 30,
-    difficulty: 'Hard',
-    topic: 'System Design',
-    description: 'Advanced system design concepts for senior engineers.'
+    difficulty: "Hard",
+    topic: "System Design",
+    description: "Advanced system design concepts for senior engineers.",
   },
   {
-    id: '3',
-    topic: 'JavaScript Basics',
-    role: 'SDE 1',
+    id: "3",
+    topic: "JavaScript Basics",
+    role: "SDE 1",
     participants: 256,
     duration: 20,
-    difficulty: 'Easy',
-    topic: 'JavaScript',
-    description: 'Basic JavaScript concepts for beginners.'
+    difficulty: "Easy",
+    topic: "JavaScript",
+    description: "Basic JavaScript concepts for beginners.",
   },
 ];
 
 export default function QuizPage() {
+  const router = useRouter();
+
   const [quizzes, setQuizzes] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
-  const [cursor, setCursor] = useState('');
+  const [cursor, setCursor] = useState("");
   const limit = 10;
   const fetchedRef = useRef(false);
 
   // Filter quizzes based on search term and active tab
-  const filteredQuizzes = quizzes.filter(quiz => {
-    const matchesSearch = quiz.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredQuizzes = quizzes.filter((quiz) => {
+    const matchesSearch =
+      quiz.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
       quiz.topic.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTab = activeTab === 'all' || quiz.difficulty.toLowerCase() === activeTab.toLowerCase();
+    const matchesTab =
+      activeTab === "all" ||
+      quiz.difficulty.toLowerCase() === activeTab.toLowerCase();
     return matchesSearch && matchesTab;
   });
 
@@ -67,16 +73,16 @@ export default function QuizPage() {
     const res = await getQuizzes(cursor, limit);
     // console.log("RESS:", { ...quizzes, ...res.data.data })
     // setQuizzes({ ...quizzes, ...res.data.data });
-    setQuizzes(prev => [...prev,...res.data.data]);
+    setQuizzes((prev) => [...prev, ...res.data.data]);
     setCursor(res.data.nextCursor);
     setIsLoading(false);
-  }
+  };
 
   useEffect(() => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
     getAllQuizzes();
-  },[]);
+  }, []);
 
   const handleCreateQuiz = (quizData) => {
     const newQuiz = {
@@ -87,7 +93,7 @@ export default function QuizPage() {
       difficulty: quizData.difficulty,
       // topic: quizData.topic,
       description: quizData.description,
-      numberOfQuestions:quizData.numberOfQuestions
+      numberOfQuestions: quizData.numberOfQuestions,
     };
 
     // setQuizzes(prev => [newQuiz, ...prev]);
@@ -99,7 +105,7 @@ export default function QuizPage() {
   const handleStartQuiz = (quiz) => {
     // Navigate to quiz taking page
     console.log('Starting quiz:', quiz.id);
-    // router.push(`/quiz/${quiz.id}`);
+    router.push(`/home/quizz/${quiz.id}`);
   };
 
   if (isLoading) {
@@ -114,8 +120,12 @@ export default function QuizPage() {
     <div className="container mx-auto p-2 md:p-2">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Technical Quizzes</h1>
-          <p className="text-muted-foreground">Test your knowledge and prepare for interviews</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Technical Quizzes
+          </h1>
+          <p className="text-muted-foreground">
+            Test your knowledge and prepare for interviews
+          </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative w-full md:w-64">
@@ -138,11 +148,7 @@ export default function QuizPage() {
         </div>
       </div>
 
-      <Tabs
-        defaultValue="all"
-        className="mb-6"
-        onValueChange={setActiveTab}
-      >
+      <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="easy">Easy</TabsTrigger>
@@ -158,7 +164,9 @@ export default function QuizPage() {
           </div>
           <h3 className="text-lg font-medium mb-1">No quizzes found</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            {searchTerm ? 'Try a different search term' : 'Create a new quiz to get started'}
+            {searchTerm
+              ? "Try a different search term"
+              : "Create a new quiz to get started"}
           </p>
           {!searchTerm && (
             <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -170,11 +178,7 @@ export default function QuizPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuizzes.map((quiz) => (
-            <QuizCard
-              key={quiz.id}
-              quiz={quiz}
-              onStartQuiz={handleStartQuiz}
-            />
+            <QuizCard key={quiz.id} quiz={quiz} onStartQuiz={handleStartQuiz} />
           ))}
         </div>
       )}
