@@ -1,9 +1,6 @@
 
-const Resume = ()=>{
-    return (
-        <div>
-            <h1>Resume Analyzer</h1>
-        </div>
-    )
+import Resume from "./components/page";
+
+export default function ResumePage() {
+  return <Resume />;
 }
-export default Resume

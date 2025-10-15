@@ -27,6 +27,10 @@ export const getCurrentQuiz = async(quizId)=>{
     return await api.get(`/api/v1/quiz/getcurrentquiz/${quizId}`)
 }
 
+export const getQuizAttemps = async(quizId)=>{
+    return await api.get(`/api/v1/quiz/getquizattempts/${quizId}`)
+}
+
 export const submitQuiz = async(quizId,payload)=>{
     return await api.post(`/api/v1/quiz/submitquiz/${quizId}`,payload)
 }

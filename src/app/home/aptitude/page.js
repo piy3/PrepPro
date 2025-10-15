@@ -136,7 +136,7 @@ const Aptitude = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black">
       {/* Header Section */}
-      <div className="bg-white/50 dark:bg-black/80 backdrop-blur-sm border-b">
+      {/* <div className="bg-white/50 dark:bg-black/80 backdrop-blur-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="flex justify-center items-center mb-4">
@@ -154,12 +154,12 @@ const Aptitude = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Topics Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 py-4 bg-white dark:bg-[#0c0909] backdrop-blur-sm rounded-2xl">
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-2">Choose Your Topic</h2>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Choose Your Topic</h2>
           <p className="text-muted-foreground">
             Select a topic to start practicing aptitude questions
           </p>

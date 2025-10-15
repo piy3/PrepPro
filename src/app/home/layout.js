@@ -29,7 +29,7 @@ const Layout = ({ children }) => {
       />
       
       <main className={`flex-1 overflow-auto transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <div className="flex justify-end p-4">
+        <div className="absolute top-1 right-6 z-10"> 
           <ModeToggle />
         </div>
         <div className="p-6">

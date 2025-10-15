@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import api from "@/api/interceptor";
 import { getCurrentQuiz } from "@/api/requests";
+import { useAuth } from "@/store/useAuth";
 
 export default function QuizStartPage({ params }) {
   const { id } = use(params);
@@ -37,6 +38,7 @@ export default function QuizStartPage({ params }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizStartTime, setQuizStartTime] = useState(null);
+  const currentUser = useAuth((state)=>state.getUserInfo());
 
   // Fetch quiz data
   const fetchQuiz = useCallback(async () => {
@@ -100,6 +102,7 @@ export default function QuizStartPage({ params }) {
       handleSubmitQuiz();
     }
   };
+  
 
   // Submit quiz
   const handleSubmitQuiz = async () => {
@@ -115,9 +118,9 @@ export default function QuizStartPage({ params }) {
       answers: selectedAnswers,
       timeTaken: totalTimeTaken, // Time in seconds
     };
-    console.log("PAYLOAD::", payload);
+    
       await api.post(`/api/v1/quiz/submitquiz/${id}`, payload);
-      router.push(`/home`)
+      router.push(`/home/quizz/${id}/result?userId=${currentUser.user.id}`);
     } catch (err) {
       setError("Failed to submit quiz. Please try again.");
       console.error("Error submitting quiz:", err);
