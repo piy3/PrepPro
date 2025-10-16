@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ export default function AptitudeTopicPage({ params }) {
   const [questionCount, setQuestionCount] = useState(1);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
+  const hasInitialized = useRef(false);
 
   // Format topic name for display
   const formatTopicName = (topicSlug) => {
@@ -69,7 +70,10 @@ export default function AptitudeTopicPage({ params }) {
 
   // Initialize first question
   useEffect(() => {
-    fetchQuestion();
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      fetchQuestion();
+    }
   }, [topic]);
 
   // Handle option selection

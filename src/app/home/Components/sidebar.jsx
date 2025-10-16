@@ -4,6 +4,7 @@ import { Home, BookOpen, MessageSquare, Settings,Calculator, ChevronLeft, Chevro
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/store/useAuth';
 
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/home' },
@@ -19,6 +20,7 @@ const navItems = [
 ];
 
 const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
+  const currUser  = useAuth((state) => state.getUserInfo());
   return (
     <div className={cn(
       'h-screen bg-background border-r flex flex-col transition-all duration-300 ease-in-out fixed top-0 left-0 z-40',
@@ -67,10 +69,10 @@ const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
         {!isCollapsed ? (
           <div className="flex items-center space-x-3 overflow-hidden">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium">U</span>
+              <span className="text-sm font-medium">{currUser.user.fullname.charAt(0).toUpperCase()}</span>
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-medium truncate">User Name</p>
+              <p className="text-sm font-medium truncate">{currUser.user.fullname}</p>
               <p className="text-xs text-muted-foreground truncate">Free Plan</p>
             </div>
           </div>

@@ -1,9 +1,10 @@
+import ArticlesPage from "./components/page"
 
 const Articles = ()=>{
     
     return (
         <div>
-            <h1>Latest Articles</h1>
+            <ArticlesPage/>
         </div>
     )
 }
