@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ModeToggle } from "@/components/ModeToggle";
-import { authUser, login } from "@/api/requests";
+import { authUser, login, registerUser } from "@/api/requests";
 import toast from "react-hot-toast";
 import { useAuth } from "@/store/useAuth";
 
@@ -62,16 +62,33 @@ export default function Home() {
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
-      // Simulate API call
-      const res = await login(formData);
-      // console.log("res:",res);
-      if (res.data.success && typeof window !== "undefined") {
-        toast.success("Login Successful");
-        loginToStore(res.data);
-        window.location.href = "/home";
-      } else {
-        toast.error(res.data.message);
+      if(isLogin){
+          const res = await login(formData);
+        // console.log("res:",res);
+        if (res.data.success && typeof window !== "undefined") {
+          toast.success("Login Successful");
+          loginToStore(res.data);
+          window.location.href = "/home";
+        } else {
+          toast.error(res.data.message);
+        }
+      }else{
+        const data = {
+          fullname:formData.name,
+          email:formData.email,
+          password:formData.password
+        }
+        const res = await registerUser(data);
+        if (res.data.success && typeof window !== "undefined") {
+          toast.success("Registration Successful");
+          loginToStore(res.data);
+          window.location.href = "/home";
+        } else {
+          toast.error(res.data.message);
+        }
       }
+      // Simulate API call
+     
       setIsLoading(false);
     }
   };

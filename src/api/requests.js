@@ -5,6 +5,10 @@ export const login = (data)=>{
     return  api.post(`/api/v1/user/login`, data);
 }
 
+export const registerUser = (data)=>{
+    return api.post(`/api/v1/user/register`, data);
+}
+
 export const authUser =async ()=>{
     return await api.post(`/api/v1/user/authuser`)
 }
