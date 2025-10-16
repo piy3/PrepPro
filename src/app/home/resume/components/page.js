@@ -30,7 +30,7 @@ import ResumeUpload from "./ResumeUpload";
 import AnalysisResults from "./AnalysisResults";
 import ResumeHistory from "./ResumeHistory";
 import ImprovementSuggestions from "./ImprovementSuggestions";
-import pdf from "pdf-parse";
+import * as pdfjsLib from "pdfjs-dist";
 
 const Resume = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -40,8 +40,11 @@ const Resume = () => {
   const [activeTab, setActiveTab] = useState("upload");
   const [resumeHistory, setResumeHistory] = useState([]);
 
-  // Load resume history on component mount
+  // Load resume history on component mount and setup PDF.js
   useEffect(() => {
+    // Set up PDF.js worker using unpkg CDN with the exact installed version
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.4.296/build/pdf.worker.min.mjs`;
+
     loadResumeHistory();
   }, []);
 
@@ -103,33 +106,65 @@ const Resume = () => {
   const extractTextFromPDF = async (file) => {
     try {
       console.log("FILE:::", file);
-      const data = await pdf(file);
-      console.log("DATAT:",data);
 
-      // Create FormData to send file to API
-      // const formData = new FormData();
-      // formData.append("file", file);
+      // Try client-side extraction first, fallback to server-side if it fails
+      try {
+        // Convert file to ArrayBuffer
+        const arrayBuffer = await file.arrayBuffer();
 
-      // // Send file to API route for processing
-      // const response = await fetch("/api/resume/extract", {
-      //   method: "POST",
-      //   body: formData,
-      // });
+        // Load the PDF document
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.error || "Failed to extract text from PDF");
-      // }
+        console.log("PDF loaded, pages:", pdf.numPages);
 
-      // const result = await response.json();
+        let fullText = "";
 
-      // console.log("PDF Parse Results:");
-      // console.log("Text Length:", result.data.textLength);
-      // console.log("Number of Pages:", result.data.numpages);
-      // console.log("PDF Info:", result.data.info);
-      // console.log("Extracted Text:", result.data.text);
+        // Extract text from each page
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
 
-      // return result.data.text;
+          // Combine all text items from the page
+          const pageText = textContent.items.map((item) => item.str).join(" ");
+          fullText += pageText + "\n";
+        }
+
+        console.log("Client-side extraction successful");
+        console.log("Extracted Text Length:", fullText.length);
+        console.log(
+          "Extracted Text Preview:",
+          fullText
+        );
+
+        return fullText;
+      } catch (clientError) {
+        console.warn("Client-side PDF extraction failed, trying server-side:", clientError);
+        
+        // Fallback to server-side extraction using our API route
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/resume/extract", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to extract text from PDF");
+        }
+
+        const result = await response.json();
+        
+        console.log("Server-side extraction successful");
+        console.log("Extracted Text Length:", result.data.text.length);
+        console.log(
+          "Extracted Text Preview:",
+          result.data.text.substring(0, 200) + "..."
+        );
+
+        return result.data.text;
+      }
     } catch (error) {
       console.error("Error extracting text from PDF:", error);
       throw new Error("Failed to extract text from PDF file");

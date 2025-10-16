@@ -1,9 +1,10 @@
+import HelpSupport from "./components/page"
 
 const Help = ()=>{
     
     return (
         <div>
-            <h1>Help & Support</h1>
+            <HelpSupport/>
         </div>
     )
 }
