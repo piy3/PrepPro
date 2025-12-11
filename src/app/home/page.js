@@ -236,7 +236,7 @@ const Page = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{resume.fileName}</div>
-                        <div className="text-sm text-muted-foreground">{formatDate(resume.analyzedAt)}</div>
+                        <div className="text-sm text-muted-foreground">{formatDate(resume.uploadDate)}</div>
                       </div>
                       <div className="ml-4">
                         <Badge className={`${
