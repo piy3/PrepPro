@@ -7,7 +7,7 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY || "";
 const NEWS_API_BASE_URL = "https://newsapi.org/v2";
 
 // Helper function to fetch articles from NewsAPI
-async function fetchNewsArticles(query = "technology", category = "all") {
+async function fetchNewsArticles(query = "software technology", category = "all") {
   if (!NEWS_API_KEY) {
     return null; // Will use fallback data
   }
@@ -19,24 +19,27 @@ async function fetchNewsArticles(query = "technology", category = "all") {
       apiKey: NEWS_API_KEY,
       language: "en",
       sortBy: "publishedAt",
-      pageSize: 30,
+      pageSize: 50,
+      excludeDomains: "abcnews.go.com,cnn.com,foxnews.com,bbc.com,cbsnews.com,nbcnews.com",
     });
 
-    // Map categories to search queries
+    // Map categories to STRICTLY SOFTWARE TECH & EDUCATION queries
     const categoryQueries = {
-      development: "programming OR coding OR software development OR web development",
-      algorithms: "algorithm OR data structures OR machine learning OR AI",
-      science: "nobel prize OR scientific award OR research breakthrough",
-      automobiles: "electric vehicle OR autonomous car OR automotive technology",
-      discovery: "scientific discovery OR research findings OR breakthrough",
+      development: "(software development OR web development OR programming OR coding) AND (tutorial OR guide OR framework OR library)",
+      algorithms: "(algorithm OR data structures OR machine learning OR artificial intelligence) AND (programming OR computer science)",
+      education: "(tech education OR programming education OR coding bootcamp OR learn programming OR computer science education OR online courses OR tech tutorial)",
     };
 
+    // STRICT: Only software technology and educational content
     if (category !== "all" && categoryQueries[category]) {
       params.set("q", categoryQueries[category]);
+      params.set("domains", "techcrunch.com,theverge.com,arstechnica.com,wired.com,medium.com,dev.to,stackoverflow.blog,github.blog,react.dev,nodejs.org");
     } else if (query) {
-      params.set("q", query);
+      params.set("q", `(${query}) AND (programming OR software OR coding OR computer science OR tech tutorial)`);
+      params.set("domains", "techcrunch.com,theverge.com,arstechnica.com,wired.com,medium.com,dev.to,stackoverflow.blog,github.blog");
     } else {
-      params.set("q", "technology OR programming OR science OR innovation");
+      params.set("q", "(software OR programming OR web development OR coding OR computer science OR tech tutorial OR app development)");
+      params.set("domains", "techcrunch.com,theverge.com,arstechnica.com,wired.com,medium.com,dev.to,stackoverflow.blog,github.blog");
     }
 
     const response = await fetch(`${endpoint}?${params.toString()}`, {
@@ -53,7 +56,46 @@ async function fetchNewsArticles(query = "technology", category = "all") {
     const data = await response.json();
 
     if (data.status === "ok" && data.articles) {
-      return data.articles.map((article, index) => ({
+      // STRICT FILTER: Only software technology and educational content
+      const techArticles = data.articles.filter(article => {
+        const text = (article.title + " " + (article.description || "")).toLowerCase();
+        
+        // EXCLUDE general news, crime, entertainment, sports, politics
+        const excludeKeywords = [
+          'plane crash', 'accident', 'highway', 'murder', 'crime', 'arrest', 'police',
+          'shooting', 'killed', 'death', 'died', 'hospital', 'fire', 'disaster',
+          'celebrity', 'movie', 'actor', 'actress', 'music', 'concert', 'film',
+          'sports', 'football', 'basketball', 'soccer', 'game', 'match', 'player',
+          'politics', 'election', 'president', 'government', 'senate', 'congress',
+          'weather', 'storm', 'hurricane', 'earthquake', 'flood', 'war', 'military',
+          'lawsuit', 'court', 'trial', 'judge', 'stock market crash', 'abc news',
+          'breaking news', 'witnesses', 'investigation', 'suspect'
+        ];
+        
+        if (excludeKeywords.some(keyword => text.includes(keyword))) {
+          return false;
+        }
+        
+        // MUST INCLUDE software/tech/education keywords
+        const requiredKeywords = [
+          'programming', 'software', 'coding', 'developer', 'code',
+          'app development', 'web development', 'mobile app', 
+          'javascript', 'python', 'java', 'react', 'angular', 'vue',
+          'node', 'api', 'database', 'framework', 'library',
+          'algorithm', 'data structure', 'machine learning', 'ai model',
+          'artificial intelligence', 'deep learning', 'neural network',
+          'computer science', 'software engineering', 'tech tutorial',
+          'programming language', 'open source', 'github', 'git',
+          'cloud computing', 'aws', 'azure', 'devops', 'docker',
+          'cybersecurity', 'encryption', 'blockchain technology',
+          'tech education', 'coding bootcamp', 'learn programming',
+          'study software', 'computer science education'
+        ];
+        
+        return requiredKeywords.some(keyword => text.includes(keyword));
+      });
+
+      return techArticles.map((article, index) => ({
         id: index + 1,
         title: article.title,
         summary: article.description || article.content?.substring(0, 200) + "..." || "No description available",
@@ -87,14 +129,8 @@ function determineCategory(text) {
   if (lowerText.match(/algorithm|data structure|sorting|search|optimization|machine learning|ai|artificial intelligence/)) {
     return "algorithms";
   }
-  if (lowerText.match(/nobel|award|prize|science|research|breakthrough|discovery|innovation/)) {
-    return "science";
-  }
-  if (lowerText.match(/car|automobile|vehicle|electric|tesla|autonomous|automotive|transport/)) {
-    return "automobiles";
-  }
-  if (lowerText.match(/discovery|research|study|findings|experiment|technology/)) {
-    return "discovery";
+  if (lowerText.match(/education|tutorial|course|learning|bootcamp|training|teach|study|student|classroom|online learning|certification/)) {
+    return "education";
   }
 
   return "development"; // Default category

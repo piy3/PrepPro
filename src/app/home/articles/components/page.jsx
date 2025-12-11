@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,18 +94,18 @@ export default function ArticlesPage() {
     return bookmarkedArticles.some((a) => a.id === articleId);
   };
 
-  // Categories configuration
+  // Categories configuration - Technology focused
   const categories = [
     {
       id: "all",
-      label: "All Articles",
+      label: "All Tech",
       icon: Globe,
       color: "bg-blue-500",
       keywords: [],
     },
     {
       id: "development",
-      label: "Development",
+      label: "Software Dev",
       icon: Code,
       color: "bg-green-500",
       keywords: [
@@ -118,11 +118,14 @@ export default function ArticlesPage() {
         "python",
         "react",
         "development",
+        "developer",
+        "node",
+        "api",
       ],
     },
     {
       id: "algorithms",
-      label: "Algorithms",
+      label: "AI & ML",
       icon: Cpu,
       color: "bg-purple-500",
       keywords: [
@@ -132,28 +135,30 @@ export default function ArticlesPage() {
         "search",
         "optimization",
         "machine learning",
-        "AI",
+        "ai",
+        "artificial intelligence",
+        "deep learning",
+        "neural network",
       ],
     },
     {
       id: "science",
-      label: "Science Awards",
+      label: "Tech Innovation",
       icon: Award,
       color: "bg-yellow-500",
       keywords: [
-        "nobel",
-        "award",
-        "prize",
-        "science",
-        "research",
-        "breakthrough",
-        "discovery",
         "innovation",
+        "breakthrough",
+        "research",
+        "technology",
+        "computing",
+        "digital transformation",
+        "tech award",
       ],
     },
     {
       id: "automobiles",
-      label: "Automobile Tech",
+      label: "Auto Tech",
       icon: Car,
       color: "bg-red-500",
       keywords: [
@@ -164,41 +169,50 @@ export default function ArticlesPage() {
         "tesla",
         "autonomous",
         "automotive",
-        "transport",
+        "ev",
+        "self-driving",
       ],
     },
     {
       id: "discovery",
-      label: "New Discovery",
+      label: "Tech Trends",
       icon: Microscope,
       color: "bg-indigo-500",
       keywords: [
         "discovery",
-        "research",
-        "study",
-        "findings",
-        "breakthrough",
-        "experiment",
-        "innovation",
-        "technology",
+        "trend",
+        "emerging",
+        "future",
+        "startup",
+        "cloud",
+        "blockchain",
+        "iot",
+        "cybersecurity",
       ],
     },
   ];
 
-  // Fetch articles from API
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
+  // Fetch articles from API - Optimized with useCallback
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch("/api/articles");
+      const response = await fetch("/api/articles", {
+        cache: "force-cache",
+        next: { revalidate: 3600 } // Cache for 1 hour
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && data.data.articles) {
         setArticles(data.data.articles);
         setFilteredArticles(data.data.articles);
+      } else {
+        throw new Error("Invalid response format");
       }
     } catch (err) {
       console.error("Error fetching articles:", err);
@@ -206,32 +220,39 @@ export default function ArticlesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Filter articles based on category and search query
   useEffect(() => {
-    let filtered = articles;
+    fetchArticles();
+  }, [fetchArticles]);
+
+  // Filter articles based on category and search query - Optimized
+  useEffect(() => {
+    let result = articles;
 
     // Filter by category
     if (selectedCategory !== "all") {
       const category = categories.find((cat) => cat.id === selectedCategory);
-      filtered = articles.filter((article) => {
-        return (
-          article.category === selectedCategory ||
-          category.keywords.some(
-            (keyword) =>
-              article.title.toLowerCase().includes(keyword) ||
-              article.summary.toLowerCase().includes(keyword) ||
-              article.tags.some((tag) => tag.toLowerCase().includes(keyword))
-          )
-        );
-      });
+      if (category) {
+        result = articles.filter((article) => {
+          return (
+            article.category === selectedCategory ||
+            category.keywords.some(
+              (keyword) =>
+                article.title.toLowerCase().includes(keyword) ||
+                article.summary.toLowerCase().includes(keyword) ||
+                article.tags.some((tag) => tag.toLowerCase().includes(keyword))
+            )
+          );
+        });
+      }
     }
 
     // Filter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      const query = trimmedQuery.toLowerCase();
+      result = result.filter(
         (article) =>
           article.title.toLowerCase().includes(query) ||
           article.summary.toLowerCase().includes(query) ||
@@ -240,18 +261,21 @@ export default function ArticlesPage() {
       );
     }
 
-    setFilteredArticles(filtered);
+    setFilteredArticles(result);
     setCurrentPage(1);
   }, [articles, selectedCategory, searchQuery]);
 
-  // Pagination
-  const indexOfLastArticle = currentPage * articlesPerPage;
-  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
-  const currentArticles = filteredArticles.slice(
-    indexOfFirstArticle,
-    indexOfLastArticle
-  );
-  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+  // Pagination - Optimized with useMemo
+  const { currentArticles, totalPages, indexOfFirstArticle, indexOfLastArticle } = useMemo(() => {
+    const lastIndex = currentPage * articlesPerPage;
+    const firstIndex = lastIndex - articlesPerPage;
+    return {
+      currentArticles: filteredArticles.slice(firstIndex, lastIndex),
+      totalPages: Math.ceil(filteredArticles.length / articlesPerPage),
+      indexOfFirstArticle: firstIndex,
+      indexOfLastArticle: lastIndex
+    };
+  }, [filteredArticles, currentPage, articlesPerPage]);
 
   // Format date
   const formatDate = (dateString) => {
@@ -276,15 +300,15 @@ export default function ArticlesPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen dark:from-black dark:via-black dark:to-black flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl">
+          <CardContent className="p-8">
             <div className="flex flex-col items-center space-y-4">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <Loader2 className="h-12 w-12 animate-spin text-blue-600 dark:text-blue-400" />
               <div className="text-center">
-                <h3 className="text-lg font-medium">Loading Articles</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Loading Technology Articles</h3>
                 <p className="text-sm text-muted-foreground">
-                  Fetching the latest content for you...
+                  Fetching the latest tech news and insights...
                 </p>
               </div>
             </div>
@@ -322,12 +346,11 @@ export default function ArticlesPage() {
       <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
           <div className="text-center mb-4 sm:mb-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-              Latest Articles
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">
+              Latest Technology Articles
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
-              Discover the latest trends, breakthroughs, and insights in
-              technology, science, and innovation
+              Discover cutting-edge technology trends, programming insights, and innovation breakthroughs
             </p>
           </div>
 
@@ -429,24 +452,27 @@ export default function ArticlesPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Trending Now
+                  <TrendingUp className="h-5 w-5 mr-2 text-red-500" />
+                  Trending Topics
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
                   {[
-                    "AI & Machine Learning",
-                    "Quantum Computing",
-                    "Electric Vehicles",
-                    "Space Exploration",
+                    { label: "AI & ML", color: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" },
+                    { label: "Web Dev", color: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" },
+                    { label: "Cloud Tech", color: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300" },
+                    { label: "EV Technology", color: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300" },
+                    { label: "Blockchain", color: "bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300" },
+                    { label: "IoT", color: "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300" },
                   ].map((topic, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="mr-2 mb-2"
+                      className={`${topic.color} cursor-pointer hover:scale-105 transition-transform`}
+                      onClick={() => setSearchQuery(topic.label)}
                     >
-                      {topic}
+                      {topic.label}
                     </Badge>
                   ))}
                 </div>
@@ -499,9 +525,10 @@ export default function ArticlesPage() {
                             alt={article.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(article.title)}&size=400&background=3b82f6&color=fff&length=2`;
+                              e.target.src = `https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&h=300&fit=crop`;
                             }}
                           />
                           {/* Gradient overlay for better badge visibility */}
