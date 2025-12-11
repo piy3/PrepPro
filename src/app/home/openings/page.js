@@ -191,18 +191,18 @@ const Openings = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       {/* Modern Header with Glassmorphism */}
       <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/30">
-                <Sparkles className="h-7 w-7 text-white" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="relative p-2 sm:p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/30">
+                <Briefcase className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  Career Opportunities
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+                  Job Openings
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 mt-1">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
                   <Target className="h-3 w-3" />
                   Find your dream job from top tech companies
                 </p>
@@ -217,8 +217,8 @@ const Openings = () => {
       </div>
 
       {/* Modern Stats Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
           <Card className="relative overflow-hidden bg-blue-600 border-0 text-white group hover:shadow-2xl hover:shadow-blue-500/30 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
             <CardHeader className="relative pb-2">
@@ -354,7 +354,7 @@ const Openings = () => {
           </Card>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
               {currentJobs.map((job) => (
                 <Card
                   key={job.id}

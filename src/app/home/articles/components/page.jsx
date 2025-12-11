@@ -320,21 +320,21 @@ export default function ArticlesPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+          <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               Latest Articles
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
               Discover the latest trends, breakthroughs, and insights in
               technology, science, and innovation
             </p>
           </div>
 
           {/* Search and Filter */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col gap-3 sm:gap-4 items-stretch sm:items-center sm:flex-row justify-between">
             {/* Search Bar */}
-            <div className="relative w-full lg:w-96">
+            <div className="relative w-full sm:w-96">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
@@ -346,7 +346,7 @@ export default function ArticlesPage() {
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
               {filteredArticles.length} article
               {filteredArticles.length !== 1 ? "s" : ""} found
             </div>
@@ -354,10 +354,10 @@ export default function ArticlesPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Categories */}
-          <div className="lg:w-64 space-y-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+          {/* Sidebar - Categories - Hidden on mobile */}
+          <div className="hidden lg:block lg:w-64 space-y-4">
             <Card className="sticky top-32">
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
@@ -479,7 +479,7 @@ export default function ArticlesPage() {
             ) : (
               <>
                 {/* Articles Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
                   {currentArticles.map((article) => {
                     const category = categories.find(
                       (cat) => cat.id === article.category

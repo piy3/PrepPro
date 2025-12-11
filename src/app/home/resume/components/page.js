@@ -260,17 +260,17 @@ const Resume = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 md:mb-8">
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Upload className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Total Uploads
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.totalUploads}
                   </div>
                 </div>
@@ -279,14 +279,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Avg ATS Score
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.avgScore}
                   </div>
                 </div>
@@ -295,14 +295,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Improvements
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.totalImprovements}
                   </div>
                 </div>
@@ -311,14 +311,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 dark:text-yellow-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Best Score
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.bestScore}
                   </div>
                 </div>

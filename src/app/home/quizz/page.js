@@ -120,13 +120,13 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="container mx-auto p-2 md:p-2">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
             Technical Quizzes
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Test your knowledge and prepare for interviews
           </p>
         </div>
@@ -179,7 +179,7 @@ export default function QuizPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
           {filteredQuizzes.map((quiz) => (
             <QuizCard key={quiz.id} quiz={quiz} onStartQuiz={handleStartQuiz} />
           ))}

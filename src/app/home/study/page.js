@@ -154,19 +154,19 @@ const Study = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/30">
-                <GraduationCap className="h-7 w-7 text-white" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="relative p-2 sm:p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/30">
+                <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
                   Study Materials
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2 mt-1">
-                  <BookMarked className="h-3 w-3" />
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
+                  <BookMarked className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                   Books, Videos & Resources for Interview Prep
                 </p>
               </div>
@@ -180,8 +180,8 @@ const Study = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
           <Card className="relative overflow-hidden bg-blue-600 border-0 text-white group hover:shadow-2xl hover:shadow-blue-500/30 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
             <CardHeader className="relative pb-2">
@@ -228,16 +228,16 @@ const Study = () => {
         </div>
 
         {/* Search & Filters */}
-        <Card className="mb-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-800/50 shadow-xl">
-          <CardHeader className="bg-blue-50 dark:bg-gray-800 border-b">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Filter className="h-5 w-5 text-blue-600" />
+        <Card className="mb-4 sm:mb-6 md:mb-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-800/50 shadow-xl">
+          <CardHeader className="bg-blue-50 dark:bg-gray-800 border-b p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               Search Study Materials
             </CardTitle>
-            <CardDescription>Find books, videos, and tutorials for your learning journey</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Find books, videos, and tutorials for your learning journey</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="relative group">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
                 <Input
@@ -267,8 +267,8 @@ const Study = () => {
         </Card>
 
         {/* Tabs for filtering */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4 sm:mb-6">
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl h-auto">
             <TabsTrigger value="all" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <Library className="h-4 w-4 mr-2" />
               All
@@ -301,7 +301,7 @@ const Study = () => {
           </Card>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
               {currentItems.map((material) => (
                 <Card
                   key={material.id}
