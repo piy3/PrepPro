@@ -374,7 +374,7 @@ export default function ArticlesPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen dark:from-black dark:via-black dark:to-black flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="flex flex-col items-center space-y-4">
@@ -395,7 +395,7 @@ export default function ArticlesPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6">
             <div className="flex flex-col items-center space-y-4">
@@ -415,10 +415,10 @@ export default function ArticlesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black">
       {/* Header */}
-      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className=" backdrop-blur-sm border-b sticky top-0 z-50">
+        <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center mb-6">
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Latest Articles

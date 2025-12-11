@@ -9,14 +9,14 @@ import { useAuth } from '@/store/useAuth';
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/home' },
   { name: 'Quizzes', icon: MessageSquare, href: '/home/quizz' },
-  { name: 'Mock Interviews', icon: Briefcase, href: '/home/mockinterview' },
   { name: 'Aptitude Practice', icon: Calculator, href: '/home/aptitude' },
   { name: 'Resume Analyzer', icon: Users, href: '/home/resume' },
+  { name: 'Latest Articles', icon: FileText, href: '/home/articles' },
+  { name: 'Help & Support', icon: HelpCircle, href: '/home/help' },
   { name: 'Openings', icon: BookOpen, href: '/home/openings' },
   { name: 'Study Material', icon: Settings, href: '/home/study' },
   { name: 'Doubt Forum', icon: MessageSquare, href: '/home/doubt' },
-  { name: 'Latest Articles', icon: FileText, href: '/home/articles' },
-  { name: 'Help & Support', icon: HelpCircle, href: '/home/help' },
+  { name: 'Mock Interviews', icon: Briefcase, href: '/home/mockinterview' },
 ];
 
 const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
@@ -69,7 +69,7 @@ const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
         {!isCollapsed ? (
           <div className="flex items-center space-x-3 overflow-hidden">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium">{currUser.user.fullname.charAt(0).toUpperCase()}</span>
+              <span className="text-sm font-medium">{currUser.user.fullname.charAt(0).toUpperCase()|| 'U'}</span>
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-medium truncate">{currUser.user.fullname}</p>

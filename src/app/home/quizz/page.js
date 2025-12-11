@@ -11,40 +11,6 @@ import { Search } from "lucide-react";
 import { generateQuiz, getQuizzes } from "@/api/requests.js";
 import { useRouter } from "next/navigation";
 
-// Mock data - replace with actual API calls
-const MOCK_QUIZZES = [
-  {
-    id: "1",
-    topic: "React Fundamentals",
-    role: "Frontend Developer",
-    participants: 124,
-    duration: 15,
-    difficulty: "Medium",
-    topic: "React",
-    description: "Test your React knowledge with these fundamental questions.",
-  },
-  {
-    id: "2",
-    topic: "System Design Principles",
-    role: "SDE 2",
-    participants: 89,
-    duration: 30,
-    difficulty: "Hard",
-    topic: "System Design",
-    description: "Advanced system design concepts for senior engineers.",
-  },
-  {
-    id: "3",
-    topic: "JavaScript Basics",
-    role: "SDE 1",
-    participants: 256,
-    duration: 20,
-    difficulty: "Easy",
-    topic: "JavaScript",
-    description: "Basic JavaScript concepts for beginners.",
-  },
-];
-
 export default function QuizPage() {
   const router = useRouter();
 
@@ -53,9 +19,12 @@ export default function QuizPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [cursor, setCursor] = useState("");
-  const limit = 10;
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 6;
   const fetchedRef = useRef(false);
+  const observerTarget = useRef(null);
 
   // Filter quizzes based on search term and active tab
   const filteredQuizzes = quizzes.filter((quiz) => {
@@ -69,13 +38,24 @@ export default function QuizPage() {
   });
 
   const getAllQuizzes = async () => {
-    // setIsLoading(true) is optional; keeping UI stable during dev double-invoke
-    const res = await getQuizzes(cursor, limit);
-    // console.log("RESS:", { ...quizzes, ...res.data.data })
-    // setQuizzes({ ...quizzes, ...res.data.data });
-    setQuizzes((prev) => [...prev, ...res.data.data]);
-    setCursor(res.data.nextCursor);
-    setIsLoading(false);
+    if (!hasMore || isFetchingMore) return;
+
+    setIsFetchingMore(true);
+    try {
+      const res = await getQuizzes(cursor, limit);
+      setQuizzes((prev) => [...prev, ...res.data.data]);
+      setCursor(res.data.nextCursor);
+
+      // Check if there are more quizzes to load
+      if (!res.data.nextCursor || res.data.data.length < limit) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error("Error fetching quizzes:", error);
+    } finally {
+      setIsFetchingMore(false);
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -83,6 +63,29 @@ export default function QuizPage() {
     fetchedRef.current = true;
     getAllQuizzes();
   }, []);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
+          getAllQuizzes();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, isFetchingMore, cursor]);
 
   const handleCreateQuiz = (quizData) => {
     const newQuiz = {
@@ -104,7 +107,7 @@ export default function QuizPage() {
 
   const handleStartQuiz = (quiz) => {
     // Navigate to quiz taking page
-    console.log('Starting quiz:', quiz.id);
+    console.log("Starting quiz:", quiz.id);
     router.push(`/home/quizz/${quiz.id}`);
   };
 
@@ -182,6 +185,24 @@ export default function QuizPage() {
           ))}
         </div>
       )}
+
+      {/* Infinite scroll trigger element */}
+      {!searchTerm && activeTab === "all" && hasMore && (
+        <div ref={observerTarget} className="flex justify-center py-8">
+          {isFetchingMore && (
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          )}
+        </div>
+      )}
+
+      {!searchTerm &&
+        activeTab === "all" &&
+        !hasMore &&
+        filteredQuizzes.length > 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No more quizzes to load</p>
+          </div>
+        )}
 
       <CreateQuizForm
         isOpen={isCreateModalOpen}

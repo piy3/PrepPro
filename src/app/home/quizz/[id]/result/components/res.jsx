@@ -22,8 +22,6 @@ import {
   XCircle,
   Medal,
   ArrowLeft,
-  Download,
-  Share2,
   RefreshCw,
   Crown,
   Award,
@@ -269,16 +267,7 @@ export default function Result({ params, searchParams }) {
                 </p>
               </div>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -421,9 +410,7 @@ export default function Result({ params, searchParams }) {
                             </Badge>
                           )}
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          Score: {participant.score}%
-                        </div>
+
                       </div>
                     </div>
                   </div>
