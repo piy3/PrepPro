@@ -65,9 +65,12 @@ const Resume = () => {
       });
     }
 
+    // Get total uploads from localStorage (this includes all uploads, even deleted ones)
+    const totalUploadsFromStorage = parseInt(localStorage.getItem("totalUploadsCounter") || "0");
+
     if (allAnalyses.length === 0) {
       setStatsData({
-        totalUploads: 0,
+        totalUploads: totalUploadsFromStorage,
         avgScore: 0,
         totalImprovements: 0,
         bestScore: 0,
@@ -87,7 +90,7 @@ const Resume = () => {
     const bestScore = Math.max(...allAnalyses.map((item) => item.atsScore));
 
     setStatsData({
-      totalUploads: allAnalyses.length,
+      totalUploads: totalUploadsFromStorage, // Use persistent counter from localStorage
       avgScore,
       totalImprovements,
       bestScore,
@@ -100,6 +103,12 @@ const Resume = () => {
       const savedHistory = localStorage.getItem("resumeHistory");
       if (savedHistory) {
         setResumeHistory(JSON.parse(savedHistory));
+      }
+      
+      // Load upload counter from localStorage
+      const uploadCounter = localStorage.getItem("totalUploadsCounter");
+      if (uploadCounter) {
+        console.log("Loaded upload counter from localStorage:", uploadCounter);
       }
       
       // TODO: Replace with actual API call when backend is ready
@@ -146,6 +155,12 @@ const Resume = () => {
 
     try {
       console.log("Starting resume analysis for:", file.name);
+      
+      // Increment upload counter in localStorage
+      const currentCounter = parseInt(localStorage.getItem("totalUploadsCounter") || "0");
+      const newCounter = currentCounter + 1;
+      localStorage.setItem("totalUploadsCounter", newCounter.toString());
+      console.log("Upload counter incremented to:", newCounter);
       
       // Send file directly to backend for extraction and analysis
       const analysis = await analyzeResume(null, file);
@@ -245,17 +260,17 @@ const Resume = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 md:mb-8">
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Upload className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Total Uploads
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.totalUploads}
                   </div>
                 </div>
@@ -264,14 +279,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Avg ATS Score
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.avgScore}
                   </div>
                 </div>
@@ -280,14 +295,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Improvements
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.totalImprovements}
                   </div>
                 </div>
@@ -296,14 +311,14 @@ const Resume = () => {
           </Card>
 
           <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center space-x-2">
-                <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 dark:text-yellow-400" />
                 <div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
                     Best Score
                   </div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {statsData.bestScore}
                   </div>
                 </div>

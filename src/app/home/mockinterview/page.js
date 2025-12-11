@@ -53,13 +53,13 @@ export default function MockInterviewPage() {
   );
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div className="container mx-auto p-3 sm:p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Mock Interviews</h1>
-          <p className="text-muted-foreground">Practice and prepare for your next interview</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Mock Interviews</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Practice and prepare for your next interview</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <div className="relative w-full md:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -120,7 +120,7 @@ export default function MockInterviewPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-xs sm:text-sm">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span>{interview.date}</span>

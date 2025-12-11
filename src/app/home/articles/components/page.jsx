@@ -35,6 +35,64 @@ export default function ArticlesPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 9;
+  const [bookmarkedArticles, setBookmarkedArticles] = useState([]);
+
+  // Load bookmarks from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("bookmarkedArticles");
+    if (saved) {
+      setBookmarkedArticles(JSON.parse(saved));
+    }
+  }, []);
+
+  // Handle article click - open in new tab
+  const handleArticleClick = (article) => {
+    if (article.url) {
+      window.open(article.url, "_blank");
+    }
+  };
+
+  // Handle bookmark toggle
+  const handleBookmark = (e, article) => {
+    e.stopPropagation();
+    const isBookmarked = bookmarkedArticles.some((a) => a.id === article.id);
+    let updatedBookmarks;
+
+    if (isBookmarked) {
+      updatedBookmarks = bookmarkedArticles.filter((a) => a.id !== article.id);
+    } else {
+      updatedBookmarks = [...bookmarkedArticles, article];
+    }
+
+    setBookmarkedArticles(updatedBookmarks);
+    localStorage.setItem("bookmarkedArticles", JSON.stringify(updatedBookmarks));
+  };
+
+  // Handle share
+  const handleShare = async (e, article) => {
+    e.stopPropagation();
+    if (navigator.share && article.url) {
+      try {
+        await navigator.share({
+          title: article.title,
+          text: article.summary,
+          url: article.url,
+        });
+      } catch (err) {
+        console.log("Share cancelled");
+      }
+    } else {
+      // Fallback: copy to clipboard
+      const shareText = `${article.title}\n${article.url || window.location.href}`;
+      navigator.clipboard.writeText(shareText);
+      alert("Link copied to clipboard!");
+    }
+  };
+
+  // Check if article is bookmarked
+  const isArticleBookmarked = (articleId) => {
+    return bookmarkedArticles.some((a) => a.id === articleId);
+  };
 
   // Categories configuration
   const categories = [
@@ -127,184 +185,28 @@ export default function ArticlesPage() {
     },
   ];
 
-  // Mock articles data - In real app, this would come from an API
-  const mockArticles = [
-    {
-      id: 1,
-      title:
-        "Revolutionary AI Algorithm Breaks Speed Records in Data Processing",
-      summary:
-        "Researchers develop a new machine learning algorithm that processes big data 10x faster than traditional methods.",
-      category: "algorithms",
-      author: "Dr. Sarah Chen",
-      publishedDate: "2024-10-15",
-      readTime: "5 min read",
-      views: 12500,
-      image:
-        "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=500&h=300&fit=crop",
-      tags: ["AI", "Machine Learning", "Big Data", "Performance"],
-      trending: true,
-    },
-    {
-      id: 2,
-      title: "Nobel Prize 2024: Groundbreaking Work in Quantum Computing",
-      summary:
-        "This year's physics Nobel Prize recognizes pioneering research in quantum error correction and fault-tolerant quantum computers.",
-      category: "science",
-      author: "Physics Committee",
-      publishedDate: "2024-10-14",
-      readTime: "8 min read",
-      views: 25600,
-      image:
-        "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=500&h=300&fit=crop",
-      tags: ["Nobel Prize", "Quantum Computing", "Physics", "Research"],
-      trending: true,
-    },
-    {
-      id: 3,
-      title: "Next.js 15 Released: Revolutionary App Router Improvements",
-      summary:
-        "The latest Next.js update brings significant performance improvements and new developer experience features.",
-      category: "development",
-      author: "Vercel Team",
-      publishedDate: "2024-10-13",
-      readTime: "6 min read",
-      views: 18900,
-      image:
-        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&h=300&fit=crop",
-      tags: ["Next.js", "React", "Web Development", "Performance"],
-      trending: false,
-    },
-    {
-      id: 4,
-      title: "Tesla's New Battery Technology Doubles Electric Vehicle Range",
-      summary:
-        "Revolutionary solid-state battery technology promises to transform the electric vehicle industry with unprecedented range and charging speed.",
-      category: "automobiles",
-      author: "Auto Tech Weekly",
-      publishedDate: "2024-10-12",
-      readTime: "7 min read",
-      views: 31200,
-      image:
-        "https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?w=500&h=300&fit=crop",
-      tags: ["Tesla", "Electric Vehicles", "Battery", "Innovation"],
-      trending: true,
-    },
-    {
-      id: 5,
-      title: "Scientists Discover New Exoplanet with Potential for Life",
-      summary:
-        "Astronomers have identified a potentially habitable exoplanet in the Goldilocks zone of a nearby star system.",
-      category: "discovery",
-      author: "NASA Research Team",
-      publishedDate: "2024-10-11",
-      readTime: "9 min read",
-      views: 42100,
-      image:
-        "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=500&h=300&fit=crop",
-      tags: ["Space", "Exoplanet", "Astronomy", "Life"],
-      trending: true,
-    },
-    {
-      id: 6,
-      title: "Advanced Graph Algorithms for Social Network Analysis",
-      summary:
-        "New algorithmic approaches for analyzing complex social networks and predicting user behavior patterns.",
-      category: "algorithms",
-      author: "Dr. Michael Rodriguez",
-      publishedDate: "2024-10-10",
-      readTime: "12 min read",
-      views: 8700,
-      image:
-        "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500&h=300&fit=crop",
-      tags: ["Graph Theory", "Social Networks", "Data Analysis", "Algorithms"],
-      trending: false,
-    },
-    {
-      id: 7,
-      title: "Breakthrough in Gene Therapy Wins Medical Research Award",
-      summary:
-        "Revolutionary CRISPR-based treatment for genetic disorders receives prestigious international recognition.",
-      category: "science",
-      author: "Medical Research Foundation",
-      publishedDate: "2024-10-09",
-      readTime: "10 min read",
-      views: 19800,
-      image:
-        "https://images.unsplash.com/photo-1576671081837-49000212a370?w=500&h=300&fit=crop",
-      tags: ["Gene Therapy", "CRISPR", "Medical Research", "Award"],
-      trending: false,
-    },
-    {
-      id: 8,
-      title: "React 19: Server Components and Concurrent Features",
-      summary:
-        "Exploring the latest React features including improved server components and enhanced concurrent rendering capabilities.",
-      category: "development",
-      author: "React Team",
-      publishedDate: "2024-10-08",
-      readTime: "11 min read",
-      views: 22400,
-      image:
-        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&h=300&fit=crop",
-      tags: ["React", "Server Components", "JavaScript", "Frontend"],
-      trending: false,
-    },
-    {
-      id: 9,
-      title: "Autonomous Vehicles: The Future of Urban Transportation",
-      summary:
-        "How self-driving cars are reshaping city planning and transportation infrastructure worldwide.",
-      category: "automobiles",
-      author: "Urban Tech Institute",
-      publishedDate: "2024-10-07",
-      readTime: "8 min read",
-      views: 15600,
-      image:
-        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500&h=300&fit=crop",
-      tags: [
-        "Autonomous Vehicles",
-        "Transportation",
-        "Smart Cities",
-        "Technology",
-      ],
-      trending: false,
-    },
-    {
-      id: 10,
-      title: "Quantum Internet: First Successful Long-Distance Transmission",
-      summary:
-        "Scientists achieve breakthrough in quantum communication with successful transmission over 1000 kilometers.",
-      category: "discovery",
-      author: "Quantum Research Lab",
-      publishedDate: "2024-10-06",
-      readTime: "7 min read",
-      views: 28900,
-      image:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500&h=300&fit=crop",
-      tags: ["Quantum Internet", "Communication", "Physics", "Technology"],
-      trending: true,
-    },
-  ];
-
-  // Initialize articles
+  // Fetch articles from API
   useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        setLoading(true);
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setArticles(mockArticles);
-        setFilteredArticles(mockArticles);
-      } catch (err) {
-        setError("Failed to load articles");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadArticles();
+    fetchArticles();
   }, []);
+
+  const fetchArticles = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/articles");
+      const data = await response.json();
+
+      if (data.success) {
+        setArticles(data.data.articles);
+        setFilteredArticles(data.data.articles);
+      }
+    } catch (err) {
+      console.error("Error fetching articles:", err);
+      setError("Failed to load articles. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter articles based on category and search query
   useEffect(() => {
@@ -415,24 +317,24 @@ export default function ArticlesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-black dark:via-black dark:to-black">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-black">
       {/* Header */}
-      <div className=" backdrop-blur-sm border-b sticky top-0 z-50">
-        <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+      <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+          <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               Latest Articles
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
               Discover the latest trends, breakthroughs, and insights in
               technology, science, and innovation
             </p>
           </div>
 
           {/* Search and Filter */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col gap-3 sm:gap-4 items-stretch sm:items-center sm:flex-row justify-between">
             {/* Search Bar */}
-            <div className="relative w-full lg:w-96">
+            <div className="relative w-full sm:w-96">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
@@ -444,7 +346,7 @@ export default function ArticlesPage() {
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
               {filteredArticles.length} article
               {filteredArticles.length !== 1 ? "s" : ""} found
             </div>
@@ -452,10 +354,10 @@ export default function ArticlesPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar - Categories */}
-          <div className="lg:w-64 space-y-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+          {/* Sidebar - Categories - Hidden on mobile */}
+          <div className="hidden lg:block lg:w-64 space-y-4">
             <Card className="sticky top-32">
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
@@ -491,7 +393,7 @@ export default function ArticlesPage() {
                       variant={isSelected ? "default" : "ghost"}
                       className={`w-full justify-start h-auto p-3 ${
                         isSelected
-                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                          ? "bg-blue-600 hover:bg-blue-700 text-white"
                           : "hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
                       onClick={() => setSelectedCategory(category.id)}
@@ -577,7 +479,7 @@ export default function ArticlesPage() {
             ) : (
               <>
                 {/* Articles Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8">
                   {currentArticles.map((article) => {
                     const category = categories.find(
                       (cat) => cat.id === article.category
@@ -587,106 +489,147 @@ export default function ArticlesPage() {
                     return (
                       <Card
                         key={article.id}
-                        className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                        className="group hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-2 overflow-hidden cursor-pointer bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200/50 dark:border-gray-800/50 flex flex-col h-full"
+                        onClick={() => handleArticleClick(article)}
                       >
-                        {/* Article Image */}
-                        <div className="relative h-48 overflow-hidden">
+                        {/* Article Image with Gradient Overlay */}
+                        <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-900">
                           <img
                             src={article.image}
                             alt={article.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(article.title)}&size=400&background=3b82f6&color=fff&length=2`;
+                            }}
                           />
-                          <div className="absolute top-4 left-4 flex space-x-2">
+                          {/* Gradient overlay for better badge visibility */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          
+                          {/* Badges */}
+                          <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                             <Badge
                               className={`${
-                                category?.color || "bg-gray-500"
-                              } text-white`}
+                                category?.color || "bg-blue-600"
+                              } text-white shadow-lg backdrop-blur-sm bg-opacity-90`}
                             >
                               <IconComponent className="h-3 w-3 mr-1" />
                               {category?.label || "General"}
                             </Badge>
                             {article.trending && (
-                              <Badge variant="destructive">
+                              <Badge className="bg-red-600 text-white shadow-lg backdrop-blur-sm bg-opacity-90">
                                 <TrendingUp className="h-3 w-3 mr-1" />
                                 Trending
                               </Badge>
                             )}
                           </div>
+
+                          {/* Source badge */}
+                          {article.source && (
+                            <div className="absolute bottom-3 right-3 z-10">
+                              <Badge variant="secondary" className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm text-xs shadow-md">
+                                {article.source}
+                              </Badge>
+                            </div>
+                          )}
                         </div>
 
-                        <CardContent className="p-6">
+                        <CardContent className="p-5 flex-1 flex flex-col">
                           {/* Article Title */}
-                          <h3 className="text-lg font-semibold line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+                          <h3 className="text-base font-bold line-clamp-2 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight min-h-[3rem]">
                             {article.title}
                           </h3>
 
                           {/* Article Summary */}
-                          <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed flex-1">
                             {article.summary}
                           </p>
 
                           {/* Tags */}
-                          <div className="flex flex-wrap gap-1 mb-4">
-                            {article.tags.slice(0, 3).map((tag, index) => (
+                          <div className="flex flex-wrap gap-1.5 mb-4">
+                            {article.tags.slice(0, 2).map((tag, index) => (
                               <Badge
                                 key={index}
                                 variant="outline"
-                                className="text-xs"
+                                className="text-xs bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300"
                               >
                                 {tag}
                               </Badge>
                             ))}
-                            {article.tags.length > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{article.tags.length - 3} more
+                            {article.tags.length > 2 && (
+                              <Badge variant="outline" className="text-xs bg-gray-50 dark:bg-gray-800/50">
+                                +{article.tags.length - 2}
                               </Badge>
                             )}
                           </div>
 
                           {/* Article Meta */}
-                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="h-3 w-3" />
-                              <span>{formatDate(article.publishedDate)}</span>
+                          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                              <span className="font-medium">{formatDate(article.publishedDate)}</span>
                             </div>
-                            <div className="flex items-center space-x-3">
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{article.readTime}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Eye className="h-3 w-3" />
-                                <span>{formatViews(article.views)}</span>
-                              </div>
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+                              <span>{article.readTime}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Eye className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                              <span>{formatViews(article.views)}</span>
                             </div>
                           </div>
 
-                          {/* Author */}
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                              By {article.author}
+                          {/* Author and Actions */}
+                          <div className="flex items-center justify-between mt-auto">
+                            <div className="flex items-center gap-2 text-xs">
+                              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
+                                {article.author?.charAt(0) || 'A'}
+                              </div>
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate max-w-[120px]">
+                                {article.author}
+                              </span>
                             </div>
-                            <div className="flex space-x-1">
+                            <div className="flex gap-1">
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0"
+                                className={`h-8 w-8 p-0 rounded-full transition-all ${
+                                  isArticleBookmarked(article.id)
+                                    ? "bg-blue-100 dark:bg-blue-900/50 hover:bg-blue-200 dark:hover:bg-blue-900"
+                                    : "hover:bg-blue-50 dark:hover:bg-blue-950"
+                                }`}
+                                onClick={(e) => handleBookmark(e, article)}
+                                title={isArticleBookmarked(article.id) ? "Remove bookmark" : "Bookmark article"}
                               >
-                                <Bookmark className="h-4 w-4" />
+                                <Bookmark
+                                  className={`h-4 w-4 transition-all ${
+                                    isArticleBookmarked(article.id)
+                                      ? "fill-blue-600 text-blue-600 dark:fill-blue-400 dark:text-blue-400 scale-110"
+                                      : "text-gray-500 dark:text-gray-400"
+                                  }`}
+                                />
                               </Button>
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 rounded-full hover:bg-green-50 dark:hover:bg-green-950 transition-all"
+                                onClick={(e) => handleShare(e, article)}
+                                title="Share article"
                               >
-                                <Share2 className="h-4 w-4" />
+                                <Share2 className="h-4 w-4 text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors" />
                               </Button>
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950 transition-all"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleArticleClick(article);
+                                }}
+                                title="Open article in new tab"
                               >
-                                <ExternalLink className="h-4 w-4" />
+                                <ExternalLink className="h-4 w-4 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" />
                               </Button>
                             </div>
                           </div>
@@ -726,6 +669,11 @@ export default function ArticlesPage() {
                               variant={isCurrentPage ? "default" : "outline"}
                               size="sm"
                               onClick={() => setCurrentPage(page)}
+                              className={
+                                isCurrentPage
+                                  ? "bg-blue-600 hover:bg-blue-700"
+                                  : ""
+                              }
                             >
                               {page}
                             </Button>
