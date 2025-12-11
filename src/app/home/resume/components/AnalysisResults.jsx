@@ -18,6 +18,8 @@ import {
   Target,
   Award,
   BarChart3,
+  Lightbulb,
+  Info,
 } from "lucide-react";
 
 const AnalysisResults = ({ results }) => {
@@ -50,6 +52,33 @@ const AnalysisResults = ({ results }) => {
 
   return (
     <div className="space-y-6">
+      {/* ATS Tips Banner - Show first if available */}
+      {results.atsTips && results.atsTips.length > 0 && (
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2 text-blue-700 dark:text-blue-300">
+              <Lightbulb className="h-5 w-5" />
+              <span>ATS Optimization Tips</span>
+            </CardTitle>
+            <CardDescription className="text-blue-600 dark:text-blue-400">
+              Recommendations based on your ATS score
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {results.atsTips.map((tip, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-blue-700 dark:text-blue-300">
+                    {tip}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Overall Score */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card
@@ -203,8 +232,8 @@ const AnalysisResults = ({ results }) => {
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Found Keywords ({results.keywordAnalysis.found.length})
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {results.keywordAnalysis.found.map((keyword, index) => (
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                {results.keywordAnalysis.found.slice(0, 20).map((keyword, index) => (
                   <Badge
                     key={index}
                     variant="outline"
@@ -213,6 +242,11 @@ const AnalysisResults = ({ results }) => {
                     {keyword}
                   </Badge>
                 ))}
+                {results.keywordAnalysis.found.length > 20 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{results.keywordAnalysis.found.length - 20} more
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -221,8 +255,8 @@ const AnalysisResults = ({ results }) => {
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 Missing Keywords ({results.keywordAnalysis.missing.length})
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {results.keywordAnalysis.missing.map((keyword, index) => (
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                {results.keywordAnalysis.missing.slice(0, 20).map((keyword, index) => (
                   <Badge
                     key={index}
                     variant="outline"
@@ -231,11 +265,71 @@ const AnalysisResults = ({ results }) => {
                     {keyword}
                   </Badge>
                 ))}
+                {results.keywordAnalysis.missing.length > 20 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{results.keywordAnalysis.missing.length - 20} more
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Additional Statistics */}
+      {results.wordCount && (
+        <Card className="bg-white/50 dark:bg-black/60 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Resume Statistics</span>
+            </CardTitle>
+            <CardDescription>
+              Key metrics about your resume
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {results.wordCount}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Total Words
+                </div>
+              </div>
+              {results.detailedAnalysis?.bulletPointCount && (
+                <div className="text-center p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    {results.detailedAnalysis.bulletPointCount}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Bullet Points
+                  </div>
+                </div>
+              )}
+              <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {results.keywordAnalysis.found.length}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Keywords Found
+                </div>
+              </div>
+              {results.detailedAnalysis?.readabilityScore && (
+                <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                    {results.detailedAnalysis.readabilityScore}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Readability Score
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

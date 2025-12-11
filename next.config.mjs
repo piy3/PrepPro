@@ -4,7 +4,7 @@ const nextConfig = {
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
   ) => {
-    // Handle PDF.js worker
+    // Handle PDF.js and pdf-parse
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
@@ -15,11 +15,22 @@ const nextConfig = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
+        'pdf-parse': false,
       };
+    }
+
+    // Ignore pdf-parse test files
+    config.externals = config.externals || [];
+    if (isServer) {
+      config.externals.push({
+        'pdf-parse/test': 'commonjs pdf-parse/test'
+      });
     }
 
     return config;
   },
+  // Suppress warnings about external packages
+  serverExternalPackages: ['pdf-parse'],
 };
 
 export default nextConfig;
