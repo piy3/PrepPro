@@ -30,52 +30,114 @@ import ResumeUpload from "./ResumeUpload";
 import AnalysisResults from "./AnalysisResults";
 import ResumeHistory from "./ResumeHistory";
 import ImprovementSuggestions from "./ImprovementSuggestions";
-import * as pdfjsLib from "pdfjs-dist";
 
 const Resume = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [extractedText, setExtractedText] = useState("");
   const [analysisResults, setAnalysisResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("upload");
   const [resumeHistory, setResumeHistory] = useState([]);
+  const [statsData, setStatsData] = useState({
+    totalUploads: 0,
+    avgScore: 0,
+    totalImprovements: 0,
+    bestScore: 0,
+  });
 
-  // Load resume history on component mount and setup PDF.js
+  // Load resume history on component mount
   useEffect(() => {
-    // Set up PDF.js worker using unpkg CDN with the exact installed version
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.4.296/build/pdf.worker.min.mjs`;
-
     loadResumeHistory();
   }, []);
 
+  // Update stats whenever history or current analysis changes
+  useEffect(() => {
+    updateStats();
+  }, [resumeHistory, analysisResults]);
+
+  const updateStats = () => {
+    const allAnalyses = [...resumeHistory];
+    
+    // Add current analysis to stats if it exists
+    if (analysisResults) {
+      allAnalyses.push({
+        atsScore: analysisResults.atsScore,
+        suggestions: analysisResults.improvements?.length || 0,
+      });
+    }
+
+    if (allAnalyses.length === 0) {
+      setStatsData({
+        totalUploads: 0,
+        avgScore: 0,
+        totalImprovements: 0,
+        bestScore: 0,
+      });
+      return;
+    }
+
+    const avgScore = Math.round(
+      allAnalyses.reduce((acc, item) => acc + item.atsScore, 0) / allAnalyses.length
+    );
+
+    const totalImprovements = allAnalyses.reduce(
+      (acc, item) => acc + (item.suggestions || 0),
+      0
+    );
+
+    const bestScore = Math.max(...allAnalyses.map((item) => item.atsScore));
+
+    setStatsData({
+      totalUploads: allAnalyses.length,
+      avgScore,
+      totalImprovements,
+      bestScore,
+    });
+  };
+
   const loadResumeHistory = async () => {
     try {
-      // Replace with your API call
-      // const response = await api.get('/api/v1/resume/history');
-      // setResumeHistory(response.data);
-
-      // Mock data for demonstration
-      setResumeHistory([
-        {
-          id: 1,
-          fileName: "john_doe_resume.pdf",
-          uploadDate: "2024-09-25",
-          atsScore: 85,
-          status: "analyzed",
-          suggestions: 12,
-        },
-        {
-          id: 2,
-          fileName: "software_engineer_resume.pdf",
-          uploadDate: "2024-09-20",
-          atsScore: 72,
-          status: "analyzed",
-          suggestions: 18,
-        },
-      ]);
+      // Load from localStorage for now (can be replaced with API call)
+      const savedHistory = localStorage.getItem("resumeHistory");
+      if (savedHistory) {
+        setResumeHistory(JSON.parse(savedHistory));
+      }
+      
+      // TODO: Replace with actual API call when backend is ready
+      // const response = await fetch('/api/resume/history');
+      // const data = await response.json();
+      // setResumeHistory(data.history);
     } catch (error) {
       console.error("Error loading resume history:", error);
+      setResumeHistory([]);
     }
+  };
+
+  const saveToHistory = (analysis, fileName) => {
+    const newEntry = {
+      id: Date.now(),
+      fileName: fileName,
+      uploadDate: new Date().toISOString().split('T')[0],
+      atsScore: analysis.atsScore,
+      status: "analyzed",
+      suggestions: analysis.improvements?.length || 0,
+      analysis: analysis, // Store full analysis for later viewing
+    };
+
+    const updatedHistory = [newEntry, ...resumeHistory].slice(0, 10); // Keep last 10
+    setResumeHistory(updatedHistory);
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem("resumeHistory", JSON.stringify(updatedHistory));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+
+    // TODO: Save to backend when API is ready
+    // await fetch('/api/resume/history', {
+    //   method: 'POST',
+    //   body: JSON.stringify(newEntry),
+    // });
   };
 
   const handleFileUpload = async (file) => {
@@ -83,143 +145,79 @@ const Resume = () => {
     setLoading(true);
 
     try {
-      // Extract text from PDF
-      const text = await extractTextFromPDF(file);
-      setExtractedText(text);
-
-      // Send to backend for analysis
-      const analysis = await analyzeResume(text, file);
+      console.log("Starting resume analysis for:", file.name);
+      
+      // Send file directly to backend for extraction and analysis
+      const analysis = await analyzeResume(null, file);
+      
+      console.log("Analysis completed successfully:", {
+        atsScore: analysis.atsScore,
+        overallRating: analysis.overallRating,
+        keywordsFound: analysis.keywordAnalysis.found.length,
+        improvementsCount: analysis.improvements.length
+      });
+      
       setAnalysisResults(analysis);
+
+      // Save to history
+      saveToHistory(analysis, file.name);
 
       // Switch to results tab
       setActiveTab("results");
-
-      // Reload history
-      await loadResumeHistory();
     } catch (error) {
       console.error("Error processing resume:", error);
+      alert(error.message || "Failed to process resume. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const extractTextFromPDF = async (file) => {
-    try {
-      console.log("FILE:::", file);
-
-      // Try client-side extraction first, fallback to server-side if it fails
-      try {
-        // Convert file to ArrayBuffer
-        const arrayBuffer = await file.arrayBuffer();
-
-        // Load the PDF document
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-        console.log("PDF loaded, pages:", pdf.numPages);
-
-        let fullText = "";
-
-        // Extract text from each page
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-
-          // Combine all text items from the page
-          const pageText = textContent.items.map((item) => item.str).join(" ");
-          fullText += pageText + "\n";
-        }
-
-        console.log("Client-side extraction successful");
-        console.log("Extracted Text Length:", fullText.length);
-        console.log(
-          "Extracted Text Preview:",
-          fullText
-        );
-
-        return fullText;
-      } catch (clientError) {
-        console.warn("Client-side PDF extraction failed, trying server-side:", clientError);
-        
-        // Fallback to server-side extraction using our API route
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/resume/extract", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to extract text from PDF");
-        }
-
-        const result = await response.json();
-        
-        console.log("Server-side extraction successful");
-        console.log("Extracted Text Length:", result.data.text.length);
-        console.log(
-          "Extracted Text Preview:",
-          result.data.text.substring(0, 200) + "..."
-        );
-
-        return result.data.text;
-      }
-    } catch (error) {
-      console.error("Error extracting text from PDF:", error);
-      throw new Error("Failed to extract text from PDF file");
-    }
-  };
-
   const analyzeResume = async (text, file) => {
-    // Send to your backend API
+    // Send to backend API for analysis
     try {
-      // const response = await api.post('/api/v1/resume/analyze', {
-      //   text: text,
-      //   fileName: file.name
-      // });
-      // return response.data;
+      const formData = new FormData();
+      formData.append("file", file);
 
-      // Mock analysis results
+      const response = await fetch("/api/resume/extract", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to analyze resume");
+      }
+
+      const result = await response.json();
+      
+      if (!result.success || !result.data.analysis) {
+        throw new Error("Invalid response from analysis API");
+      }
+
+      const analysis = result.data.analysis;
+      
+      console.log("Resume Analysis Results:", analysis);
+
+      // Transform the analysis data to match the expected format
       return {
-        atsScore: 78,
-        overallRating: 4.2,
-        strengths: [
-          "Strong technical skills section",
-          "Relevant work experience",
-          "Clear formatting and structure",
-          "Quantified achievements",
-        ],
-        improvements: [
-          "Add more industry keywords",
-          "Include specific metrics in achievements",
-          "Optimize for ATS compatibility",
-          "Add relevant certifications",
-          "Improve skills section organization",
-        ],
+        atsScore: analysis.atsScore,
+        overallRating: analysis.overallRating,
+        strengths: analysis.strengths,
+        improvements: analysis.improvements,
         keywordAnalysis: {
-          found: ["JavaScript", "React", "Node.js", "Python", "AWS"],
-          missing: [
-            "TypeScript",
-            "Docker",
-            "Kubernetes",
-            "CI/CD",
-            "Microservices",
-          ],
+          found: analysis.keywordAnalysis.found,
+          missing: analysis.keywordAnalysis.missing,
         },
-        sections: {
-          contact: { score: 90, feedback: "Complete and professional" },
-          summary: { score: 75, feedback: "Good but could be more impactful" },
-          experience: {
-            score: 85,
-            feedback: "Well-structured with good details",
-          },
-          skills: { score: 70, feedback: "Missing some key technologies" },
-          education: { score: 80, feedback: "Relevant and well-presented" },
-        },
+        sections: analysis.sections,
+        contactInfo: analysis.contactInfo,
+        detailedAnalysis: analysis.detailedAnalysis,
+        atsTips: analysis.atsTips,
+        wordCount: analysis.wordCount,
+        fileName: analysis.fileName,
       };
     } catch (error) {
-      throw new Error("Failed to analyze resume");
+      console.error("Error analyzing resume:", error);
+      throw new Error(error.message || "Failed to analyze resume");
     }
   };
 
@@ -258,7 +256,7 @@ const Resume = () => {
                     Total Uploads
                   </div>
                   <div className="text-2xl font-bold">
-                    {resumeHistory.length}
+                    {statsData.totalUploads}
                   </div>
                 </div>
               </div>
@@ -274,14 +272,7 @@ const Resume = () => {
                     Avg ATS Score
                   </div>
                   <div className="text-2xl font-bold">
-                    {resumeHistory.length > 0
-                      ? Math.round(
-                          resumeHistory.reduce(
-                            (acc, resume) => acc + resume.atsScore,
-                            0
-                          ) / resumeHistory.length
-                        )
-                      : 0}
+                    {statsData.avgScore}
                   </div>
                 </div>
               </div>
@@ -297,10 +288,7 @@ const Resume = () => {
                     Improvements
                   </div>
                   <div className="text-2xl font-bold">
-                    {resumeHistory.reduce(
-                      (acc, resume) => acc + resume.suggestions,
-                      0
-                    )}
+                    {statsData.totalImprovements}
                   </div>
                 </div>
               </div>
@@ -316,9 +304,7 @@ const Resume = () => {
                     Best Score
                   </div>
                   <div className="text-2xl font-bold">
-                    {resumeHistory.length > 0
-                      ? Math.max(...resumeHistory.map((r) => r.atsScore))
-                      : 0}
+                    {statsData.bestScore}
                   </div>
                 </div>
               </div>
@@ -381,8 +367,17 @@ const Resume = () => {
             <ResumeHistory
               history={resumeHistory}
               onResumeSelect={(resume) => {
-                // Handle resume selection from history
-                console.log("Selected resume:", resume);
+                // Load selected resume analysis
+                if (resume.analysis) {
+                  setAnalysisResults(resume.analysis);
+                  setActiveTab("results");
+                }
+              }}
+              onDelete={(id) => {
+                // Remove from history
+                const updatedHistory = resumeHistory.filter(item => item.id !== id);
+                setResumeHistory(updatedHistory);
+                localStorage.setItem("resumeHistory", JSON.stringify(updatedHistory));
               }}
             />
           </TabsContent>

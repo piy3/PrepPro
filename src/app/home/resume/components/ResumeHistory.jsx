@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const ResumeHistory = ({ history, onResumeSelect }) => {
+const ResumeHistory = ({ history, onResumeSelect, onDelete }) => {
   const getScoreColor = (score) => {
     if (score >= 80)
       return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/20";
@@ -54,9 +54,11 @@ const ResumeHistory = ({ history, onResumeSelect }) => {
     console.log("Downloading resume:", resume.fileName);
   };
 
-  const handleDelete = (resumeId) => {
-    // Mock delete functionality
-    console.log("Deleting resume:", resumeId);
+  const handleDelete = (resumeId, event) => {
+    event.stopPropagation(); // Prevent card click
+    if (confirm("Are you sure you want to delete this analysis?")) {
+      onDelete?.(resumeId);
+    }
   };
 
   const handleView = (resume) => {
@@ -187,7 +189,7 @@ const ResumeHistory = ({ history, onResumeSelect }) => {
                         className="text-red-600 dark:text-red-400"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(resume.id);
+                          handleDelete(resume.id, e);
                         }}
                       >
                         <Trash2 className="h-4 w-4 mr-2" />

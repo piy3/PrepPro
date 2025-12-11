@@ -69,10 +69,14 @@ const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
         {!isCollapsed ? (
           <div className="flex items-center space-x-3 overflow-hidden">
             <div className="h-8 w-8 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center">
-              <span className="text-sm font-medium">{currUser.user.fullname.charAt(0).toUpperCase()|| 'U'}</span>
+              <span className="text-sm font-medium">
+                {currUser?.user?.fullname ? currUser.user.fullname.charAt(0).toUpperCase() : 'U'}
+              </span>
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-medium truncate">{currUser.user.fullname}</p>
+              <p className="text-sm font-medium truncate">
+                {currUser?.user?.fullname || 'User'}
+              </p>
               <p className="text-xs text-muted-foreground truncate">Free Plan</p>
             </div>
           </div>
