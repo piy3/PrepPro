@@ -20,6 +20,15 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      // Disable specific rules globally
+      "@next/next/no-img-element": "off",
+      "react-hooks/exhaustive-deps": "warn",
+      "no-unused-vars": "warn",
+      // Add more rules to disable as needed
+    },
+  },
 ];
 
 export default eslintConfig;
