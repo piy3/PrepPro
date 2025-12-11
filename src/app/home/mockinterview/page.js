@@ -91,7 +91,7 @@ export default function MockInterviewPage() {
           </p>
         </div>
       </div>
-
+    }
       {/* Welcome Card */}
       <Card className="mb-6">
         <CardHeader>
