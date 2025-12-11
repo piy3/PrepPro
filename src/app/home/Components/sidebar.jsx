@@ -9,14 +9,14 @@ import { useAuth } from '@/store/useAuth';
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/home' },
   { name: 'Quizzes', icon: MessageSquare, href: '/home/quizz' },
-  { name: 'Mock Interviews', icon: Briefcase, href: '/home/mockinterview' },
   { name: 'Aptitude Practice', icon: Calculator, href: '/home/aptitude' },
   { name: 'Resume Analyzer', icon: Users, href: '/home/resume' },
+  { name: 'Latest Articles', icon: FileText, href: '/home/articles' },
+  { name: 'Help & Support', icon: HelpCircle, href: '/home/help' },
   { name: 'Openings', icon: BookOpen, href: '/home/openings' },
   { name: 'Study Material', icon: Settings, href: '/home/study' },
   { name: 'Doubt Forum', icon: MessageSquare, href: '/home/doubt' },
-  { name: 'Latest Articles', icon: FileText, href: '/home/articles' },
-  { name: 'Help & Support', icon: HelpCircle, href: '/home/help' },
+  { name: 'Mock Interviews', icon: Briefcase, href: '/home/mockinterview' },
 ];
 
 const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
