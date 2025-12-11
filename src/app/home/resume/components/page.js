@@ -65,9 +65,12 @@ const Resume = () => {
       });
     }
 
+    // Get total uploads from localStorage (this includes all uploads, even deleted ones)
+    const totalUploadsFromStorage = parseInt(localStorage.getItem("totalUploadsCounter") || "0");
+
     if (allAnalyses.length === 0) {
       setStatsData({
-        totalUploads: 0,
+        totalUploads: totalUploadsFromStorage,
         avgScore: 0,
         totalImprovements: 0,
         bestScore: 0,
@@ -87,7 +90,7 @@ const Resume = () => {
     const bestScore = Math.max(...allAnalyses.map((item) => item.atsScore));
 
     setStatsData({
-      totalUploads: allAnalyses.length,
+      totalUploads: totalUploadsFromStorage, // Use persistent counter from localStorage
       avgScore,
       totalImprovements,
       bestScore,
@@ -100,6 +103,12 @@ const Resume = () => {
       const savedHistory = localStorage.getItem("resumeHistory");
       if (savedHistory) {
         setResumeHistory(JSON.parse(savedHistory));
+      }
+      
+      // Load upload counter from localStorage
+      const uploadCounter = localStorage.getItem("totalUploadsCounter");
+      if (uploadCounter) {
+        console.log("Loaded upload counter from localStorage:", uploadCounter);
       }
       
       // TODO: Replace with actual API call when backend is ready
@@ -146,6 +155,12 @@ const Resume = () => {
 
     try {
       console.log("Starting resume analysis for:", file.name);
+      
+      // Increment upload counter in localStorage
+      const currentCounter = parseInt(localStorage.getItem("totalUploadsCounter") || "0");
+      const newCounter = currentCounter + 1;
+      localStorage.setItem("totalUploadsCounter", newCounter.toString());
+      console.log("Upload counter incremented to:", newCounter);
       
       // Send file directly to backend for extraction and analysis
       const analysis = await analyzeResume(null, file);
