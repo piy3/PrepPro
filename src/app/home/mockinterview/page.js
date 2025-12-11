@@ -80,7 +80,7 @@ export default function MockInterviewPage() {
   ];
 
   return (
-    <div className="container mx-auto p-3 sm:p-4 md:p-6">{
+    <div className="container mx-auto p-3 sm:p-4 md:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
@@ -91,7 +91,7 @@ export default function MockInterviewPage() {
           </p>
         </div>
       </div>
-    }
+
       {/* Welcome Card */}
       <Card className="mb-6">
         <CardHeader>
