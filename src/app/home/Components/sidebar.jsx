@@ -15,7 +15,6 @@ const navItems = [
   { name: 'Help & Support', icon: HelpCircle, href: '/home/help' },
   { name: 'Openings', icon: BookOpen, href: '/home/openings' },
   { name: 'Study Material', icon: Settings, href: '/home/study' },
-  { name: 'Doubt Forum', icon: MessageSquare, href: '/home/doubt' },
   { name: 'Mock Interviews', icon: Briefcase, href: '/home/mockinterview' },
 ];
 
