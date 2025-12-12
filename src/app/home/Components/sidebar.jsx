@@ -26,7 +26,7 @@ const SideBar = ({ isCollapsed, onToggleCollapse, activeItem = '/home' }) => {
       isCollapsed ? 'w-20' : 'w-60'
     )}>
       <div className="p-4 border-b flex items-center justify-between">
-        {!isCollapsed && <h1 className="text-xl font-bold">PlacementPrep</h1>}
+        {!isCollapsed && <h1 className="text-xl font-bold">InterviewSathi</h1>}
         <Button 
           variant="ghost" 
           size="icon" 

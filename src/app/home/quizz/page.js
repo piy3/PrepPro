@@ -157,6 +157,7 @@ export default function QuizPage() {
           <TabsTrigger value="easy">Easy</TabsTrigger>
           <TabsTrigger value="medium">Medium</TabsTrigger>
           <TabsTrigger value="hard">Hard</TabsTrigger>
+          <TabsTrigger value="hardest">Hardest</TabsTrigger>
         </TabsList>
       </Tabs>
 

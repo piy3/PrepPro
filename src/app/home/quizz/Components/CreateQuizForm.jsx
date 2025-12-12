@@ -22,7 +22,7 @@ const ROLES = [
   'Product Manager'
 ];
 
-const DIFFICULTY_LEVELS = ['Easy', 'Medium', 'Hard'];
+const DIFFICULTY_LEVELS = ['Easy', 'Medium', 'Hard','Hardest'];
 
 export function CreateQuizForm({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
