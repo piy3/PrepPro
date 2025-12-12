@@ -177,10 +177,7 @@ const Page = () => {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Dashboard</h1>
             <p className="text-sm sm:text-base text-muted-foreground mt-1">Track your placement preparation progress</p>
           </div>
-          <Badge variant="outline" className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-50 dark:bg-blue-950">
-            <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-blue-600 dark:text-blue-400" />
-            <span className="text-sm sm:text-base text-blue-700 dark:text-blue-300">PrepPro</span>
-          </Badge>
+         
         </div>
 
         {/* Stats Grid */}

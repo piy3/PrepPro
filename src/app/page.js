@@ -136,11 +136,11 @@ export default function Home() {
                 <h1 className="text-5xl font-bold text-indigo-900 dark:text-indigo-200 mb-6">
                   Welcome to{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
-                    PrepPro
+                    PlacementPrep
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                  Your all-in-one platform for placement preparation. Ace your
+                   Your all-in-one platform for placement preparation. Ace your
                   interviews with our comprehensive resources and mock tests.
                 </p>
                 <div className="space-y-4">
@@ -184,26 +184,7 @@ export default function Home() {
                       Track your progress and improve
                     </p>
                   </div>
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/30 rounded-full p-2 mr-4">
-                      <svg
-                        className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Get personalized recommendations
-                    </p>
-                  </div>
+                  
                 </div>
               </div>
 
