@@ -7,12 +7,12 @@ Placement Prep is an all-in-one AI based preparation platform for students getti
 The core idea of this project is to bring the full placement journey into one product instead of using separate tools for practice, interview prep, resume review, and job tracking.
 
 Students can:
+
 - practice aptitude and quiz questions by topic,
 - prepare for interviews with mock interview support,
 - analyze resumes using ATS-style scoring and improvement suggestions,
 - discover job openings and study resources,
 - read placement-focused articles and learning material.
-
 
 ## Main Modules
 

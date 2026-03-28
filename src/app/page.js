@@ -8,6 +8,11 @@ import { authUser, login, registerUser } from "@/api/requests";
 import toast from "react-hot-toast";
 import { useAuth } from "@/store/useAuth";
 
+const DEMO_USER_CREDENTIALS = {
+  email: "lmn@gmail.com",
+  password: "abc@123",
+};
+
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
@@ -58,12 +63,22 @@ export default function Home() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsLoading(true);
-      if(isLogin){
-          const res = await login(formData);
+  const handleSubmit = async (e, payloadOverride = null) => {
+    e?.preventDefault();
+
+    if (!payloadOverride && !validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (isLogin) {
+        const loginPayload = payloadOverride ?? {
+          email: formData.email,
+          password: formData.password,
+        };
+        const res = await login(loginPayload);
         // console.log("res:",res);
         if (res.data.success && typeof window !== "undefined") {
           toast.success("Login Successful");
@@ -72,12 +87,12 @@ export default function Home() {
         } else {
           toast.error(res.data.message);
         }
-      }else{
+      } else {
         const data = {
-          fullname:formData.name,
-          email:formData.email,
-          password:formData.password
-        }
+          fullname: formData.name,
+          email: formData.email,
+          password: formData.password,
+        };
         const res = await registerUser(data);
         if (res.data.success && typeof window !== "undefined") {
           toast.success("Registration Successful");
@@ -87,8 +102,7 @@ export default function Home() {
           toast.error(res.data.message);
         }
       }
-      // Simulate API call
-     
+    } finally {
       setIsLoading(false);
     }
   };
@@ -140,8 +154,8 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                   Ace your
-                  Placements with our comprehensive resources and mock tests.
+                  Ace your Placements with our comprehensive resources and mock
+                  tests.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center">
@@ -184,7 +198,6 @@ export default function Home() {
                       Track your progress and improve
                     </p>
                   </div>
-                  
                 </div>
               </div>
 
@@ -262,7 +275,6 @@ export default function Home() {
                   </div>
 
                   <div>
-                    
                     <input
                       id="password"
                       name="password"
@@ -347,6 +359,17 @@ export default function Home() {
                       "Sign up"
                     )}
                   </button>
+
+                  {isLogin && (
+                    <button
+                      type="button"
+                      onClick={() => handleSubmit(null, DEMO_USER_CREDENTIALS)}
+                      disabled={isLoading}
+                      className="cursor-pointer w-full text-sm text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+                    >
+                      Enter as demo user
+                    </button>
+                  )}
                 </form>
 
                 <div className="mt-6">
@@ -354,12 +377,8 @@ export default function Home() {
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                      
-                    </div>
+                    <div className="relative flex justify-center text-sm"></div>
                   </div>
-
-                  
                 </div>
               </div>
             </div>
