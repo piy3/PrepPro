@@ -136,12 +136,12 @@ export default function Home() {
                 <h1 className="text-5xl font-bold text-indigo-900 dark:text-indigo-200 mb-6">
                   Welcome to{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
-                    InterviewSathi
+                    PrepPro
                   </span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
                    Ace your
-                  interviews with our comprehensive resources and mock tests.
+                  Placements with our comprehensive resources and mock tests.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center">
