@@ -1,47 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Placement Prep
+
+Placement Prep is an all-in-one AI based preparation platform for students getting ready for campus placements and technical interviews.
+
+## Project Idea
+
+The core idea of this project is to bring the full placement journey into one product instead of using separate tools for practice, interview prep, resume review, and job tracking.
+
+Students can:
+- practice aptitude and quiz questions by topic,
+- prepare for interviews with mock interview support,
+- analyze resumes using ATS-style scoring and improvement suggestions,
+- discover job openings and study resources,
+- read placement-focused articles and learning material.
+
+
+## Main Modules
+
+- `Aptitude Practice` — topic-wise question practice and performance tracking
+- `Quiz` — custom and route-based quizzes with result views
+- `Mock Interview` — guided interview flow
+- `Resume Analyzer` — PDF upload, ATS-style analysis, and improvement tips
+- `Job Openings` — job listing and exploration
+- `Study + Articles` — curated learning and preparation content
+
+## Tech Stack
+
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- API routes for backend logic
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run production build:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open `http://localhost:3000` in your browser.
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create a `.env.local` file with:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-.env config:
-
-NEXT_PUBLIC_BASE_URL = http://localhost:5000
-
+```env
+NEXT_PUBLIC_BASE_URL=http://localhost:5000
 EMAIL_USER=yourMail@gmail.com
-
 EMAIL_PASS=your-16-digit-password
-
 ADMIN_EMAIL=yourMail@gmail.com
+```
